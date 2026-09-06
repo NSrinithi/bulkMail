@@ -16,9 +16,9 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 const credentials = [{
-        username: process.env.ADMIN_USERNAME,
-        password: process.env.ADMIN_PASSWORD
-    }];
+    username: process.env.ADMIN_USERNAME,
+    password: process.env.ADMIN_PASSWORD
+}];
 
 
 const emailSchema = new mongoose.Schema({
@@ -62,11 +62,16 @@ app.post("/sendEmail", async (req, res) => {
     console.log("Content:", content);
 
     const transporter = nodemailer.createTransport({
-        service: "smtp.gmail.com",
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false,
         auth: {
             user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
+            pass: process.env.EMAIL_PASSWORD
         },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 10000
     });
 
     try {
