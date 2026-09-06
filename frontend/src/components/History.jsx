@@ -1,39 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 function History() {
-
     const [history, setHistory] = useState([]);
 
     // Fetch email history
     useEffect(() => {
-
         async function fetchHistory() {
-
             try {
-
                 const response = await axios.get(
                     "https://bulkmail-r0f3.onrender.com/emailHistory"
                 );
 
                 setHistory(response.data);
-
             } catch (error) {
-
                 console.error(error);
                 alert("Can't fetch email history");
-
             }
         }
 
         fetchHistory();
-
     }, []);
-
 
     // Delete history
     const deleteHistory = async (id) => {
-
         const confirmDelete = window.confirm(
             "Are you sure you want to delete this email history?"
         );
@@ -43,39 +33,32 @@ function History() {
         }
 
         try {
-
             await axios.delete(
                 `https://bulkmail-r0f3.onrender.com/deleteHistory/${id}`
             );
 
-            // Remove deleted item from UI
-            setHistory(
-                history.filter(item => item._id !== id)
+            setHistory((prevHistory) =>
+                prevHistory.filter((item) => item._id !== id)
             );
-
         } catch (error) {
-
             console.error(error);
             alert("Failed to delete history");
-
         }
     };
 
-
     return (
-
-        <div className="min-h-screen bg-slate-100 p-8">
+        <div className="min-h-screen bg-slate-100 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
 
             <div className="max-w-5xl mx-auto">
 
                 {/* Header */}
-                <div className="mb-8">
+                <div className="mb-6 sm:mb-8">
 
-                    <h1 className="text-3xl font-bold text-slate-800">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
                         Email History
                     </h1>
 
-                    <p className="text-slate-500 mt-2">
+                    <p className="text-sm sm:text-base text-slate-500 mt-2">
                         View your previously sent bulk emails
                     </p>
 
@@ -85,9 +68,9 @@ function History() {
                 {/* No History */}
                 {history.length === 0 ? (
 
-                    <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
+                    <div className="bg-white rounded-2xl p-6 sm:p-8 text-center shadow-sm">
 
-                        <p className="text-slate-500">
+                        <p className="text-sm sm:text-base text-slate-500">
                             No email history found.
                         </p>
 
@@ -102,20 +85,24 @@ function History() {
 
                             <div
                                 key={item._id}
-                                className="bg-white rounded-2xl p-6 
+                                className="bg-white rounded-2xl p-4 sm:p-6 
                                            shadow-sm border border-slate-200"
                             >
 
                                 {/* Top Section */}
-                                <div className="flex justify-between items-start gap-4">
+                                <div className="flex flex-col lg:flex-row 
+                                                lg:justify-between 
+                                                lg:items-start gap-4">
 
                                     {/* Subject + Recipients */}
-                                    <div className="flex-1">
+                                    <div className="flex-1 min-w-0">
 
-                                        <h2 className="text-xl font-semibold text-slate-800">
+                                        <h2 className="text-lg sm:text-xl 
+                                                       font-semibold 
+                                                       text-slate-800 
+                                                       break-words">
                                             {item.subject}
                                         </h2>
-
 
                                         <p className="text-sm text-slate-500 mt-1">
                                             {item.emails.length} recipients
@@ -129,9 +116,14 @@ function History() {
 
                                                 <span
                                                     key={index}
-                                                    className="bg-slate-100 text-slate-700 
-                                                               px-3 py-1 rounded-full 
-                                                               text-sm"
+                                                    className="bg-slate-100 
+                                                               text-slate-700 
+                                                               px-2.5 sm:px-3 
+                                                               py-1 
+                                                               rounded-full 
+                                                               text-xs sm:text-sm 
+                                                               max-w-full 
+                                                               break-all"
                                                 >
                                                     {email}
                                                 </span>
@@ -144,13 +136,20 @@ function History() {
 
 
                                     {/* Status + Delete */}
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center 
+                                                    justify-between 
+                                                    sm:justify-start 
+                                                    gap-3 
+                                                    w-full lg:w-auto">
 
                                         {/* Status */}
                                         <span
-                                            className="bg-green-100 text-green-700 
-                                                       px-3 py-1 rounded-full 
-                                                       text-sm"
+                                            className="bg-green-100 
+                                                       text-green-700 
+                                                       px-3 py-1 
+                                                       rounded-full 
+                                                       text-xs sm:text-sm 
+                                                       whitespace-nowrap"
                                         >
                                             {item.status}
                                         </span>
@@ -158,12 +157,18 @@ function History() {
 
                                         {/* Delete Button */}
                                         <button
-                                            onClick={() => deleteHistory(item._id)}
-                                            className="bg-red-100 text-red-600 
-                                                       px-3 py-1 rounded-lg 
-                                                       text-sm font-medium
-                                                       hover:bg-red-200
-                                                       transition"
+                                            onClick={() =>
+                                                deleteHistory(item._id)
+                                            }
+                                            className="bg-red-100 
+                                                       text-red-600 
+                                                       px-3 py-1.5 
+                                                       rounded-lg 
+                                                       text-xs sm:text-sm 
+                                                       font-medium 
+                                                       hover:bg-red-200 
+                                                       transition 
+                                                       whitespace-nowrap"
                                         >
                                             Delete
                                         </button>
@@ -174,9 +179,12 @@ function History() {
 
 
                                 {/* Email Content */}
-                                <div className="mt-5">
+                                <div className="mt-4 sm:mt-5">
 
-                                    <p className="text-slate-600 whitespace-pre-wrap">
+                                    <p className="text-sm sm:text-base 
+                                                  text-slate-600 
+                                                  whitespace-pre-wrap 
+                                                  break-words">
                                         {item.content}
                                     </p>
 
@@ -184,13 +192,20 @@ function History() {
 
 
                                 {/* Sent Date */}
-                                <div className="mt-5 pt-4 border-t border-slate-100">
+                                <div className="mt-4 sm:mt-5 
+                                                pt-4 
+                                                border-t 
+                                                border-slate-100">
 
-                                    <p className="text-sm text-slate-400">
+                                    <p className="text-xs sm:text-sm 
+                                                  text-slate-400 
+                                                  break-words">
 
                                         Sent on:{" "}
 
-                                        {new Date(item.sentAt).toLocaleString()}
+                                        {new Date(
+                                            item.sentAt
+                                        ).toLocaleString()}
 
                                     </p>
 
@@ -207,7 +222,6 @@ function History() {
             </div>
 
         </div>
-
     );
 }
 

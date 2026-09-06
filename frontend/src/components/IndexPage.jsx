@@ -10,6 +10,7 @@ function IndexPage() {
     const [subject, setSubject] = useState('');
     const [content, setContent] = useState('');
     const [emailList, setEmailList] = useState([]);
+    
 
     const [isSending, setIsSending] = useState(false);
 
@@ -108,6 +109,7 @@ function IndexPage() {
             // 5. Send emails
             // --------------------------------
 
+            console.log("calling api");
             const response = await axios.post(
                 "https://bulkmail-r0f3.onrender.com/sendEmail",
                 {
