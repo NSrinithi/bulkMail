@@ -33,7 +33,6 @@ const emailSchema = new mongoose.Schema({
 })
 const EmailHistory = mongoose.model("EmailHistory", emailSchema);
 
-const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server is running on port ${PORT}`);
@@ -121,11 +120,7 @@ app.delete("/deleteHistory/:id", async (req, res) => {
         res.send("History deleted successfully");
 
     } catch (error) {
-
         console.error(error);
-
         res.status(500).send("Failed to delete history");
-
     }
-
 });
