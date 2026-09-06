@@ -74,7 +74,7 @@ app.post("/sendEmail", async (req, res) => {
                 text: content
             });
 
-
+            console.log("Successfully sent to:", emailList[i]);
 
 
         }
