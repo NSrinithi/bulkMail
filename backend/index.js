@@ -4,7 +4,7 @@ app.use(express.json());
 require("dotenv").config();
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://127.0.0.1:27017/bulkMail").then(response => {
+mongoose.connect(process.env.MONGO_URL).then(response => {
     console.log("DB connected");
 })
 
