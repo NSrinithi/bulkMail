@@ -12,7 +12,7 @@ const nodemailer = require("nodemailer");
 
 const cors = require('cors');
 app.use(cors());
-app.use(express.json);
+app.use(express.json());
 
 
 const PORT = process.env.PORT || 3000;
@@ -65,7 +65,7 @@ app.post("/sendEmail", async (req, res) => {
     console.log("Content:", content);
 
     const transporter = nodemailer.createTransport({
-        service: "smtp.gmail.com",
+        service: "gmail.com",
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASSWORD,
