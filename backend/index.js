@@ -16,9 +16,9 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 const credentials = [{
-        username: process.env.ADMIN_USERNAME,
-        password: process.env.ADMIN_PASSWORD
-    }];
+    username: process.env.ADMIN_USERNAME,
+    password: process.env.ADMIN_PASSWORD
+}];
 
 
 const emailSchema = new mongoose.Schema({
@@ -55,6 +55,8 @@ app.post("/sendEmail", async (req, res) => {
     const subject = req.body.subject;
     const content = req.body.content;
     console.log(emailList + "," + subject + "," + content);
+    console.log("EMAIL_USER exists:", !!process.env.EMAIL_USER);
+    console.log("EMAIL_PASSWORD exists:", !!process.env.EMAIL_PASSWORD);
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
