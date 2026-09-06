@@ -55,8 +55,8 @@ app.post("/sendEmail", async (req, res) => {
     const subject = req.body.subject;
     const content = req.body.content;
     console.log(emailList + "," + subject + "," + content);
-    console.log("EMAIL_USER exists:", !!process.env.EMAIL_USER);
-    console.log("EMAIL_PASSWORD exists:", !!process.env.EMAIL_PASSWORD);
+    console.log("EMAIL_USER exists:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASSWORD exists:", process.env.EMAIL_PASSWORD);
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
