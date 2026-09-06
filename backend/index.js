@@ -67,7 +67,12 @@ app.post("/sendEmail", async (req, res) => {
 
     try {
 
+        await transporter.verify();
+        console.log("Gmail SMTP connection successful");
+
+
         for (let i = 0; i < emailList.length; i++) {
+            console.log("Starting send to:", emailList[i]);
 
             await transporter.sendMail({
                 from: "srinithinithiyanantham@gmail.com",
