@@ -62,7 +62,7 @@ app.post("/sendEmail", async (req, res) => {
     console.log("Content:", content);
 
     const transporter = nodemailer.createTransport({
-        service: "gmail",
+        service: "smtp.gmail.com",
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASSWORD,
@@ -70,10 +70,7 @@ app.post("/sendEmail", async (req, res) => {
     });
 
     try {
-
         console.log("Checking Gmail connection...");
-
-
         console.log("Gmail connection successful");
 
         for (let i = 0; i < emailList.length; i++) {
