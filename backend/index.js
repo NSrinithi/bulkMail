@@ -13,6 +13,8 @@ const nodemailer = require("nodemailer");
 const cors = require('cors');
 app.use(cors());
 
+const PORT = process.env.PORT || 3000;
+
 const credentials = [{
         username: process.env.ADMIN_USERNAME,
         password: process.env.ADMIN_PASSWORD
@@ -31,7 +33,7 @@ const emailSchema = new mongoose.Schema({
 })
 const EmailHistory = mongoose.model("EmailHistory", emailSchema);
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
     console.log("Server is running on port 3000");
 });
 
