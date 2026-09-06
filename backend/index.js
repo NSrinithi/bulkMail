@@ -41,6 +41,7 @@ app.listen(PORT, "0.0.0.0", () => {
 });
 
 app.get("/login", (req, res) => {
+    console.log("Received the login");
     console.log("Received login request with params:", req.query);
     if (req.query.username === credentials[0].username && req.query.password === credentials[0].password) {
         res.send("Login successful");
