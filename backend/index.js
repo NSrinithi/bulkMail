@@ -73,7 +73,6 @@ app.post("/sendEmail", async (req, res) => {
 
         console.log("Checking Gmail connection...");
 
-        await transporter.verify();
 
         console.log("Gmail connection successful");
 
