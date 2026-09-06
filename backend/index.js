@@ -8,8 +8,6 @@ mongoose.connect(process.env.MONGO_URL).then(response => {
     console.log("DB connected");
 })
 
-const nodemailer = require("nodemailer");
-
 const cors = require('cors');
 app.use(cors());
 app.use(express.json());
@@ -18,9 +16,9 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 const credentials = [{
-    username: process.env.ADMIN_USERNAME,
-    password: process.env.ADMIN_PASSWORD
-}];
+        username: process.env.ADMIN_USERNAME,
+        password: process.env.ADMIN_PASSWORD
+    }];
 
 
 const emailSchema = new mongoose.Schema({
@@ -64,33 +62,36 @@ app.post("/sendEmail", async (req, res) => {
     console.log("Subject:", subject);
     console.log("Content:", content);
 
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-        },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 15000,
-    });
-
     try {
-        console.log("Checking Gmail connection...");
-        console.log("Gmail connection successful");
 
         for (let i = 0; i < emailList.length; i++) {
 
             console.log("Sending to:", emailList[i]);
 
-            await transporter.sendMail({
-                from: process.env.EMAIL_USER,
-                to: emailList[i],
-                subject: subject,
-                text: content
+            const brevoResponse = await fetch("https://api.brevo.com/v3/smtp/email", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "api-key": process.env.BREVO_API_KEY,
+                },
+                body: JSON.stringify({
+                    sender: { email: process.env.EMAIL_USER },
+                    to: [{ email: emailList[i] }],
+                    subject: subject,
+                    textContent: content,
+                }),
             });
 
-            console.log("Successfully sent to:", emailList[i]);
+            const brevoData = await brevoResponse.json();
+
+            if (!brevoResponse.ok) {
+                // Brevo returns error details in the JSON body even on failure
+                console.error("Brevo error for", emailList[i], ":", brevoData);
+                throw new Error(brevoData.message || "Brevo send failed");
+            }
+
+            console.log("Successfully sent to:", emailList[i], "messageId:", brevoData.messageId);
         }
 
         await EmailHistory.create({
@@ -109,9 +110,6 @@ app.post("/sendEmail", async (req, res) => {
         console.error("========== EMAIL ERROR ==========");
         console.error(error);
         console.error("Message:", error.message);
-        console.error("Code:", error.code);
-        console.error("Command:", error.command);
-        console.error("Response:", error.response);
 
         res.status(500).send("Failed to send");
 
