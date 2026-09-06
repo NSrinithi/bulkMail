@@ -18,9 +18,9 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 const credentials = [{
-        username: process.env.ADMIN_USERNAME,
-        password: process.env.ADMIN_PASSWORD
-    }];
+    username: process.env.ADMIN_USERNAME,
+    password: process.env.ADMIN_PASSWORD
+}];
 
 
 const emailSchema = new mongoose.Schema({
@@ -70,6 +70,9 @@ app.post("/sendEmail", async (req, res) => {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASSWORD,
         },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
     });
 
     try {
