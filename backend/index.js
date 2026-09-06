@@ -50,11 +50,17 @@ app.get("/login", (req, res) => {
 
 
 app.post("/sendEmail", async (req, res) => {
-    console.log("hi");
+
+    console.log("========== SEND EMAIL ==========");
+
     const emailList = req.body.emailList;
     const subject = req.body.subject;
     const content = req.body.content;
-    console.log(emailList + "," + subject + "," + content);
+
+    console.log("Email list:", emailList);
+    console.log("Subject:", subject);
+    console.log("Content:", content);
+
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -65,31 +71,46 @@ app.post("/sendEmail", async (req, res) => {
 
     try {
 
+        console.log("Checking Gmail connection...");
+
+        await transporter.verify();
+
+        console.log("Gmail connection successful");
+
         for (let i = 0; i < emailList.length; i++) {
 
+            console.log("Sending to:", emailList[i]);
+
             await transporter.sendMail({
-                from: "srinithinithiyanantham@gmail.com",
+                from: process.env.EMAIL_USER,
                 to: emailList[i],
                 subject: subject,
                 text: content
             });
 
-
-
-
+            console.log("Successfully sent to:", emailList[i]);
         }
+
         await EmailHistory.create({
             emails: emailList,
             subject: subject,
             content: content,
             status: "sent"
-        })
+        });
+
+        console.log("History saved");
 
         res.send("Send successfully");
 
     } catch (error) {
 
+        console.error("========== EMAIL ERROR ==========");
         console.error(error);
+        console.error("Message:", error.message);
+        console.error("Code:", error.code);
+        console.error("Command:", error.command);
+        console.error("Response:", error.response);
+
         res.status(500).send("Failed to send");
 
     }
