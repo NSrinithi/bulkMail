@@ -13,7 +13,7 @@ function History() {
             try {
 
                 const response = await axios.get(
-                    "http://localhost:3000/emailHistory"
+                    "https://bulkmail-r0f3.onrender.com/emailHistory"
                 );
 
                 setHistory(response.data);
@@ -45,7 +45,7 @@ function History() {
         try {
 
             await axios.delete(
-                `http://localhost:3000/deleteHistory/${id}`
+                `https://bulkmail-r0f3.onrender.com/deleteHistory/${id}`
             );
 
             // Remove deleted item from UI

@@ -109,7 +109,7 @@ function IndexPage() {
             // --------------------------------
 
             const response = await axios.post(
-                "http://localhost:3000/sendEmail",
+                "https://bulkmail-r0f3.onrender.com/sendEmail",
                 {
                     emailList: emails,
                     subject: subject,
