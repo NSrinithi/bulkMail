@@ -1,4 +1,5 @@
 const express = require('express');
+const { google } = require("googleapis");
 const app = express();
 app.use(express.json());
 require("dotenv").config();
@@ -9,6 +10,16 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 mongoose.connect(process.env.MONGO_URL).then(response => {
     console.log("DB connected");
 })
+
+const oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    process.env.GOOGLE_REDIRECT_URI
+);
+
+const GMAIL_SCOPES = [
+    "https://www.googleapis.com/auth/gmail.send"
+];
 
 const nodemailer = require("nodemailer");
 
@@ -34,7 +45,44 @@ const emailSchema = new mongoose.Schema({
     }
 })
 const EmailHistory = mongoose.model("EmailHistory", emailSchema);
+app.get("/authorize", (req, res) => {
 
+    const authorizationUrl = oauth2Client.generateAuthUrl({
+        access_type: "offline",
+        scope: GMAIL_SCOPES,
+        prompt: "consent"
+    });
+
+    res.redirect(authorizationUrl);
+});
+app.get("/oauth2callback", async (req, res) => {
+
+    try {
+
+        const { code } = req.query;
+
+        if (!code) {
+            return res.status(400).send("Authorization code missing");
+        }
+
+        const { tokens } = await oauth2Client.getToken(code);
+
+        console.log("Google authorization successful");
+
+        res.send(`
+            <h2>Google authorization successful!</h2>
+            <p>Copy the refresh token below and add it to Render as GOOGLE_REFRESH_TOKEN.</p>
+            <p><b>Do not share this token with anyone.</b></p>
+            <textarea style="width:100%;height:150px;">${tokens.refresh_token || "No refresh token returned"}</textarea>
+        `);
+
+    } catch (error) {
+
+        console.error("OAuth error:", error);
+
+        res.status(500).send("Google authorization failed");
+    }
+});
 app.listen(PORT, () => {
     console.log("Server is running on port 3000");
 });
