@@ -3,6 +3,8 @@ const app = express();
 app.use(express.json());
 require("dotenv").config();
 const mongoose = require("mongoose");
+const { Resend } = require("resend");
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 mongoose.connect(process.env.MONGO_URL).then(response => {
     console.log("DB connected");
@@ -50,52 +52,33 @@ app.get("/login", (req, res) => {
 
 
 app.post("/sendEmail", async (req, res) => {
-
-    console.log("1. Send email request received");
+    console.log("Send email request received");
 
     const emailList = req.body.emailList;
     const subject = req.body.subject;
     const content = req.body.content;
 
-    console.log("2. Email list:", emailList);
-    console.log("3. EMAIL_USER configured:", !!process.env.EMAIL_USER);
-    console.log("4. EMAIL_PASSWORD configured:", !!process.env.EMAIL_PASSWORD);
+    console.log("Number of recipients:", emailList.length);
 
     try {
-
-        console.log("5. Creating transporter");
-
-        const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD
-            }
-        });
-
-        console.log("6. Transporter created");
-
-        console.log("7. Verifying Gmail connection");
-
-        await transporter.verify();
-
-        console.log("8. Gmail SMTP connection successful");
-
         for (let i = 0; i < emailList.length; i++) {
 
-            console.log("9. Starting send to:", emailList[i]);
+            console.log("Sending to:", emailList[i]);
 
-            await transporter.sendMail({
-                from: process.env.EMAIL_USER,
-                to: emailList[i],
+            const { data, error } = await resend.emails.send({
+                from: "onboarding@resend.dev",
+                to: [emailList[i]],
                 subject: subject,
                 text: content
             });
 
-            console.log("10. Successfully sent to:", emailList[i]);
-        }
+            if (error) {
+                console.error("Resend error:", error);
+                throw new Error(error.message);
+            }
 
-        console.log("11. All emails sent");
+            console.log("Successfully sent:", data.id);
+        }
 
         await EmailHistory.create({
             emails: emailList,
@@ -104,14 +87,13 @@ app.post("/sendEmail", async (req, res) => {
             status: "sent"
         });
 
-        console.log("12. History saved");
+        console.log("History saved");
 
         res.send("Send successfully");
 
     } catch (error) {
 
-        console.error("❌ EMAIL ERROR:");
-        console.error(error);
+        console.error("EMAIL ERROR:", error);
 
         res.status(500).send("Failed to send email");
     }
